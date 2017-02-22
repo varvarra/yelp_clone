@@ -8,10 +8,13 @@ Devise.setup do |config|
   # by default. You can change it below and use your own secret key.
   # config.secret_key = '5e631088e37e35b4939c603d67c5735b3f5b1bb5a67cafca94210ec089ea8653aade456c8ef1903389acaf776231ed8607d742c09894acf63ef4cb8461cc59e6'
 
+
   # ==> Mailer Configuration
   # Configure the e-mail address which will be shown in Devise::Mailer,
   # note that it will be overwritten if you use your own mailer class
   # with default "from" parameter.
+
+
   config.mailer_sender = 'please-change-me-at-config-initializers-devise@example.com'
 
   # Configure the class responsible to send e-mails.
@@ -245,9 +248,14 @@ Devise.setup do |config|
   config.sign_out_via = :delete
 
   # ==> OmniAuth
+
   # Add a new OmniAuth provider. Check the wiki for more information on setting
   # up on your models and hooks.
-  # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
+  config.omniauth :facebook,
+    Rails.application.secrets.facebook_app_id,
+    Rails.application.secrets.facebook_app_secret
+
+
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or

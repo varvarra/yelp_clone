@@ -1,6 +1,13 @@
 require 'rails_helper'
 
 feature 'restaurants' do
+
+  before do
+    sign_up_and_in
+  end
+
+  let!(:user){User.where(email: "test@example.com").first}
+
   context 'no restaurants have been added' do
     scenario 'should display a prompt to add a restaurant' do
       visit '/restaurants'
@@ -11,13 +18,19 @@ feature 'restaurants' do
 
   context 'restaurants have been added' do
     before do
-      Restaurant.create(name: 'KFC')
+      Restaurant.create(name: 'KFC', user_id: user.id)
     end
 
     scenario 'display restaurants' do
       visit '/restaurants'
       expect(page).to have_content('KFC')
       expect(page).not_to have_content('No restaurants yet')
+    end
+
+    scenario "can see a list of restaurants when signed out" do
+      click_link('Sign out')
+      visit '/restaurants'
+      expect(page).to have_content "KFC"
     end
   end
 
@@ -30,6 +43,7 @@ feature 'restaurants' do
       expect(page).to have_content 'KFC'
       expect(current_path).to eq '/restaurants'
     end
+
 
     context 'an invalid restaurant' do
       scenario 'does not let you submit a name that is too short' do
@@ -48,6 +62,15 @@ feature 'restaurants' do
 
     scenario "lets the user view a restaurant" do
       visit restaurants_path
+      click_link "KFC"
+      expect(page).to have_content "KFC"
+      expect(current_path).to eq "/restaurants/#{kfc.id}"
+    end
+
+
+    scenario "can view a restaurant when signed out" do
+      click_link('Sign out')
+      visit '/restaurants'
       click_link "KFC"
       expect(page).to have_content "KFC"
       expect(current_path).to eq "/restaurants/#{kfc.id}"
@@ -71,7 +94,6 @@ feature 'restaurants' do
 
   context 'deleting restaurants' do
     before { Restaurant.create name: 'KFC', description: 'Deep fried goodness' }
-
 
     scenario 'removes a restaurant when a user clicks a delete link' do
       visit '/restaurants'
