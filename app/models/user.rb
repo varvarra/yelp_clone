@@ -6,9 +6,9 @@ class User < ApplicationRecord
          :omniauthable, :omniauth_providers => [:facebook]
 
 
-  has_many :restaurants
+  has_many :restaurants, dependent: :destroy
   has_many :reviewed_restaurants, through: :reviews, source: :restaurant
-  has_many :reviews
+  has_many :reviews, dependent: :destroy
 
       def self.from_omniauth(auth)
          where(provider: auth.provider, uid: auth.uid).first_or_create do |user|

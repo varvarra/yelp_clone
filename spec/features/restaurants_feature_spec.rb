@@ -2,23 +2,23 @@ require 'rails_helper'
 
 feature 'restaurants' do
 
-  before do
-    sign_up_and_in
-  end
+  # context 'no restaurants have been added' do
+  #   scenario 'should display a prompt to add a restaurant' do
+  #     visit restaurant_path
+  #     expect(page).to have_content 'No restaurants yet'
+  #     expect(page).to have_link 'Add a restaurant'
+  #   end
+  # end
 
-  let!(:user){User.where(email: "test@example.com").first}
 
-  context 'no restaurants have been added' do
-    scenario 'should display a prompt to add a restaurant' do
-      visit '/restaurants'
-      expect(page).to have_content 'No restaurants yet'
-      expect(page).to have_link 'Add a restaurant'
-    end
-  end
+  # let!(:user){User.where(email: "test@example.com").first}
+
 
   context 'restaurants have been added' do
+
     before do
-      Restaurant.create(name: 'KFC', user_id: user.id)
+      sign_up_and_in
+      @user.restaurants.create(name: 'KFC')
     end
 
     scenario 'display restaurants' do
@@ -35,6 +35,11 @@ feature 'restaurants' do
   end
 
   context 'creating restaurants' do
+
+    before do
+      sign_up_and_in
+
+    end
     scenario 'prompt user to fill out a form, then displays the new restaurant' do
       visit restaurants_path     # rails route helper
       click_link 'Add a restaurant'
@@ -59,8 +64,11 @@ feature 'restaurants' do
 
   context "viewing restaurants" do
     let!(:kfc){ Restaurant.create(name:"KFC") }
-
+    before {sign_up_and_in
+      @user.restaurants.create(name: 'KFC')
+    }
     scenario "lets the user view a restaurant" do
+
       visit restaurants_path
       click_link "KFC"
       expect(page).to have_content "KFC"
@@ -78,8 +86,10 @@ feature 'restaurants' do
   end
 
   context 'editing restaurants' do
-    before { Restaurant.create name: 'KFC', description: 'Deep fried goodness', id: 1 }
+    # before { Restaurant.create name: 'KFC', description: 'Deep fried goodness', id: 1 }
     scenario 'let a user edit a restaurant' do
+      sign_up_and_in
+      @restaurant = @user.restaurants.create(name: 'KFC', description: 'deep fried goodness')
       visit restaurants_path
       click_link 'Edit KFC'
       fill_in 'Name', with: 'Kentucky Fried Chicken'
@@ -88,15 +98,16 @@ feature 'restaurants' do
       click_link 'Kentucky Fried Chicken'
       expect(page).to have_content 'Kentucky Fried Chicken'
       expect(page).to have_content 'Deep fried goodness'
-      expect(current_path).to eq '/restaurants/1'
+      expect(current_path).to eq "/restaurants/#{@restaurant.id}"
     end
   end
 
   context 'deleting restaurants' do
-    before { Restaurant.create name: 'KFC', description: 'Deep fried goodness' }
-
     scenario 'removes a restaurant when a user clicks a delete link' do
-      visit '/restaurants'
+
+      sign_up_and_in
+      @user.restaurants.create(name: 'KFC', description: 'deep fried goodness')
+      visit restaurants_path
       click_link 'Delete KFC'
       expect(page).not_to have_content 'KFC'
       expect(page).to have_content 'Restaurant deleted successfully'
