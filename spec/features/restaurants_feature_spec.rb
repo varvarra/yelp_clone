@@ -2,13 +2,15 @@ require 'rails_helper'
 
 feature 'restaurants' do
 
-  # context 'no restaurants have been added' do
-  #   scenario 'should display a prompt to add a restaurant' do
-  #     visit restaurant_path
-  #     expect(page).to have_content 'No restaurants yet'
-  #     expect(page).to have_link 'Add a restaurant'
-  #   end
-  # end
+  context 'no restaurants have been added' do
+
+    scenario 'should display a prompt to add a restaurant' do
+      sign_up_and_in
+      visit restaurants_path
+      expect(page).to have_content 'No restaurants yet'
+      expect(page).to have_link 'Add a restaurant'
+    end
+  end
 
 
   # let!(:user){User.where(email: "test@example.com").first}
@@ -63,16 +65,20 @@ feature 'restaurants' do
   end
 
   context "viewing restaurants" do
-    let!(:kfc){ Restaurant.create(name:"KFC") }
-    before {sign_up_and_in
-      @user.restaurants.create(name: 'KFC')
-    }
+    before do
+      sign_up_and_in
+      @restaurant = Restaurant.create(name: "KFC", user: @user)
+      # @user.restaurants.create(name: 'KFC')
+    end
+
+    # let!(:kfc){ Restaurant.create(name:"KFC") }
+
     scenario "lets the user view a restaurant" do
 
       visit restaurants_path
       click_link "KFC"
       expect(page).to have_content "KFC"
-      expect(current_path).to eq "/restaurants/#{kfc.id}"
+      expect(current_path).to eq "/restaurants/#{@restaurant.id}"
     end
 
 
@@ -81,7 +87,7 @@ feature 'restaurants' do
       visit '/restaurants'
       click_link "KFC"
       expect(page).to have_content "KFC"
-      expect(current_path).to eq "/restaurants/#{kfc.id}"
+      expect(current_path).to eq "/restaurants/#{@restaurant.id}"
     end
   end
 
