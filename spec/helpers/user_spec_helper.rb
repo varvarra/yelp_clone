@@ -26,6 +26,7 @@ def leave_review(thoughts, rating)
   select rating, from: 'Rating'
   click_button 'Leave Review'
 end
+
 # def sign_in
 #   visit('/')
 #   click_link('Sign in')

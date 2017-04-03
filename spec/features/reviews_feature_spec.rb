@@ -6,15 +6,12 @@ feature 'reviewing' do
     @restaurant = Restaurant.create(name: 'KFC', description: 'Deep fried goodness', user: @user)
   }
 
-
-
   scenario 'allows users to leave a review using a form when signed in' do
     visit '/restaurants'
     click_link 'Review KFC'
     fill_in "Thoughts", with: "so so"
     select '3', from: 'Rating'
     click_button 'Leave Review'
-
     expect(current_path).to eq '/restaurants'
     expect(page).to have_content('so so')
  end
@@ -29,6 +26,6 @@ feature 'reviewing' do
     leave_review('So so', '3')
     sign_in_with_another_user
     leave_review('Great', '5')
-    expect(page).to have_content('Average rating: 4')
+    expect(page).to have_content('Average rating: ★★★★☆')
   end
 end
